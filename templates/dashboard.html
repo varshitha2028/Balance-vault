@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>BalanceVault Dashboard</title>
+    <style>
+        body {
+            font-family: Arial;
+            background: #eaf0fa;
+            text-align: center;
+            padding-top: 60px;
+        }
+
+        .box {
+            background: white;
+            padding: 35px;
+            margin: auto;
+            width: 350px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px #bbb;
+        }
+
+        .balance {
+            color: #155eef;
+            font-size: 32px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<div class="box">
+    <h1>BalanceVault</h1>
+
+    <h2>Welcome, {{ username }}!</h2>
+
+    <p>Available Account Balance</p>
+
+    <div class="balance">
+        ₹{{ "%.2f"|format(balance) }}
+    </div>
+
+    <p>Your account is active.</p>
+
+    <a href="/logout">Logout</a>
+    {% with messages = get_flashed_messages() %}
+    {% for message in messages %}
+        <p>{{ message }}</p>
+    {% endfor %}
+{% endwith %}
+
+<hr>
+
+<h2>Add Demo Money</h2>
+
+<form method="POST" action="/deposit">
+    <input
+        type="number"
+        name="amount"
+        min="1"
+        step="0.01"
+        placeholder="Enter amount"
+        required
+    >
+    <button type="submit">Add Money</button>
+</form>
+    <hr>
+
+<h2>Send Money</h2>
+
+<form method="POST" action="{{ url_for('transfer') }}">
+
+    <label>Receiver Username</label>
+    <input
+        type="text"
+        name="receiver"
+        placeholder="Enter receiver username"
+        required
+    >
+
+    <br><br>
+
+    <label>Amount (INR)</label>
+    <input
+        type="number"
+        name="amount"
+        min="0.01"
+        step="0.01"
+        placeholder="Enter amount"
+        required
+    >
+
+    <br><br>
+
+    <button type="submit">Transfer Money</button>
+
+</form>
+
+<hr>
+
+<h2>Transaction History</h2>
+
+{% for item in history %}
+
+    <p>
+        <strong>{{ item["entry_type"] }}</strong>
+        ₹{{ "%.2f"|format(item["amount"] / 100) }}
+        with {{ item["counterparty"] }}
+        <br>
+        Transaction ID: {{ item["transaction_id"] }}
+        <br>
+        Date: {{ item["created_at"] }}
+    </p>
+
+{% else %}
+
+    <p>No transactions yet.</p>
+
+{% endfor %}
+</div>
+
+</body>
+</html>
